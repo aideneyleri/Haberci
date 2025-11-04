@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Ana Akış - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .article-card {
+        background-color: var(--bs-secondary-bg);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 12px;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, opacity 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+    .article-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+    .article-card.is-read {
+        opacity: 0.5;
+    }
+    .article-card.is-read:hover {
+        opacity: 0.8;
+    }
+    .article-card a {
+        text-decoration: none;
+        color: var(--bs-body-color);
+    }
+    .article-card .card-title {
+        font-weight: 700;
+    }
+    .card-meta {
+        font-size: 0.85rem;
+        color: #a0a0a0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-3">Ana Akış</h1>
+    <a href="{% url 'core:website-create' %}" class="btn btn-primary btn-lg">
+        <i class="bi bi-plus-lg"></i> Yeni Site Ekle
+    </a>
+</div>
+
+{% if articles %}
+    <div class="row">
+        {% for article in articles %}
+            <div class="col-lg-12">
+                <div class="card article-card {% if article.is_read %}is-read{% endif %}" data-article-id="{{ article.pk }}">
+                    <div class="card-body">
+                        <a href="{{ article.url }}" target="_blank" rel="noopener noreferrer" class="stretched-link article-link">
+                            <h5 class="card-title">{{ article.title }}</h5>
+                        </a>
+                        <p class="card-text text-muted">{{ article.description|truncatewords:30 }}</p>
+                        <div class="card-meta">
+                            <span><i class="bi bi-globe"></i> {{ article.website.name }}</span>
+                            <span class="ms-3"><i class="bi bi-clock"></i> {{ article.published_at|timesince }} önce</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5">
+        <h3 class="text-muted">Henüz takip ettiğiniz bir site yok.</h3>
+        <p>Hemen şimdi yeni bir site ekleyerek yayınları takip etmeye başlayın!</p>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    document.querySelectorAll('.article-link').forEach(link => {
+        link.addEventListener('click', (event) => {
+            const card = event.target.closest('.article-card');
+            if (card && !card.classList.contains('is-read')) {
+                const articleId = card.dataset.articleId;
+
+                // Anında UI güncellemesi
+                card.classList.add('is-read');
+
+                // Arka planda API'yi çağır
+                fetch(`/article/${articleId}/mark-as-read/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .catch(error => console.error('Error marking article as read:', error));
+            }
+        });
+    });
+</script>
+{% endblock %}

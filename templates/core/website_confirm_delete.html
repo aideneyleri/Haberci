@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Siteyi Sil - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="display-3 mb-4">Siteyi Sil</h1>
+
+<div class="card" style="background-color: var(--bs-secondary-bg); border-color: var(--bs-border-color);">
+    <div class="card-body">
+        <p><strong>{{ object.name }}</strong> adlı siteyi silmek istediğinizden emin misiniz?</p>
+        <p class="text-muted">Bu işlem geri alınamaz. Bu siteye ait tüm yayınlar da kalıcı olarak silinecektir.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-end">
+                <a href="{% url 'core:website-list' %}" class="btn btn-outline-secondary">İptal</a>
+                <button type="submit" class="btn btn-danger ms-2">Evet, Sil</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}{% if 'edit' in request.path %}Siteyi Düzenle{% else %}Yeni Site Ekle{% endif %} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<h1 class="display-3 mb-4">{% if 'edit' in request.path %}Siteyi Düzenle{% else %}Yeni Site Ekle{% endif %}</h1>
+
+<form method="post" class="card" style="background-color: var(--bs-secondary-bg); border-color: var(--bs-border-color);">
+    <div class="card-body">
+        {% csrf_token %}
+        <fieldset>
+            <legend class="h5 mb-3">Site Bilgileri</legend>
+            {{ website_form.as_p }}
+        </fieldset>
+
+        <fieldset id="scraping-rules-fieldset" class="mt-4" {% if website_form.instance.rss_feed_url %}style="display:none;"{% endif %}>
+            <legend class="h5 mb-3">Scraping Kuralları</legend>
+            <p class="text-muted small">Bu site için bir RSS akışı sağlamadıysanız, yayınları bulabilmemiz için lütfen aşağıdaki CSS seçicilerini tanımlayın.</p>
+            {{ scraping_rule_form.as_p }}
+        </fieldset>
+    </div>
+    <div class="card-footer bg-transparent border-top-0 text-end">
+        <a href="{% url 'core:website-list' %}" class="btn btn-outline-secondary">İptal</a>
+        <button type="submit" class="btn btn-primary ms-2">Kaydet</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const rssField = document.getElementById('id_rss_feed_url');
+    const scrapingRulesFieldset = document.getElementById('scraping-rules-fieldset');
+
+    rssField.addEventListener('input', function() {
+        if (rssField.value.trim() !== '') {
+            scrapingRulesFieldset.style.display = 'none';
+        } else {
+            scrapingRulesFieldset.style.display = 'block';
+        }
+    });
+</script>
+{% endblock %}

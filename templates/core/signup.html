@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Kayıt Ol - {{ block.super }}{% endblock %}
+
+{% block extra_head %}
+<style>
+    .signup-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    .signup-card {
+        background: rgba(30, 30, 30, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 450px;
+    }
+    .form-control {
+        background-color: rgba(0, 0, 0, 0.2);
+        border: 1px solid #444;
+        color: var(--bs-body-color);
+    }
+    .form-control:focus {
+        background-color: rgba(0, 0, 0, 0.3);
+        border-color: #888;
+        color: var(--bs-body-color);
+        box-shadow: none;
+    }
+    .btn-primary {
+        background-color: #0d6efd;
+        border: none;
+        transition: background-color 0.2s ease-in-out;
+    }
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+    }
+    .form-text {
+        color: #aaa;
+    }
+    .text-center a {
+        color: #0d6efd;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <div class="signup-card">
+        <h2 class="text-center mb-4">Hesap Oluştur</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Kayıt Ol</button>
+            </div>
+        </form>
+        <div class="text-center mt-3">
+            <p>Zaten bir hesabın var mı? <a href="{% url 'core:login' %}">Giriş Yap</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
